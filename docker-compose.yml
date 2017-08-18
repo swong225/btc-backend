@@ -1,0 +1,27 @@
+version: '3'
+services:
+  backend:
+    build: .
+    ports:
+     - "3001:3001"
+    volumes:
+     - ./node_modules:/home/btc-backend/node_modules
+    networks:
+    - btc-network
+  postgres:
+    image: postgres:9.6.4
+    ports:
+     - "5432:5432"
+    env_file:
+      ./postgres.env
+    networks:
+    - btc-network
+  adminer:
+    image: adminer
+    ports:
+    - "8080:8080"
+    networks:
+    - btc-network
+
+networks:
+  btc-network:
