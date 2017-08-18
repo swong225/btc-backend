@@ -10,6 +10,7 @@ services:
      - ./bin:/home/btc-backend/bin
      - ./public:/home/btc-backend/public
      - ./config:/home/btc-backend/config
+     - ./db:/home/btc-backend/db
      - ./app.js:/home/btc-backend/app.js
     networks:
     - btc-network

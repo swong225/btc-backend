@@ -4,6 +4,7 @@
   "rules": {
     "jsx-a11y/href-no-hash": "off",
     "jsx-a11y/anchor-is-valid": ["warn", { "aspects": ["invalidHref"] }],
-    "comma-dangle": ["error", "never"]
+    "comma-dangle": ["error", "never"],
+    "arrow-parens": ["error", "as-needed"]
   }
 }
