@@ -1,16 +1,17 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+
+const db = require('../db');
+
+const router = express.Router();
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
-  // res.send('respond with a resource');
-  res.json([{
-  	id: 1,
-  	username: "testUN"
-  }, {
-  	id: 2,
-  	username: "anotherTest"
-  }]);
+router.get('/', (req, res, next) => {
+  db.query('SELECT $1::json as message', [{
+    id: 1,
+    username: 'testUN'
+  }]).then(result => {
+    res.send([result.rows[0].message]);
+  });
 });
 
 module.exports = router;

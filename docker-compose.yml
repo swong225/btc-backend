@@ -6,6 +6,12 @@ services:
      - "3001:3001"
     volumes:
      - ./node_modules:/home/btc-backend/node_modules
+     - ./routes:/home/btc-backend/routes
+     - ./bin:/home/btc-backend/bin
+     - ./public:/home/btc-backend/public
+     - ./config:/home/btc-backend/config
+     - ./db:/home/btc-backend/db
+     - ./app.js:/home/btc-backend/app.js
     networks:
     - btc-network
   postgres:
