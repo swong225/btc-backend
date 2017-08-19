@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "supervisor -RV bin/www"
+    "start": "supervisor -RV bin/www",
+    "lint": "eslint './**' || exit 0"
   },
   "dependencies": {
     "body-parser": "~1.17.1",
