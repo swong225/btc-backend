@@ -7,6 +7,7 @@ services:
     volumes:
      - ./src:/home/btc-backend/src
      - ./node_modules:/home/btc-backend/node_modules
+     - ./logs:/home/btc-backend/logs
      - ./bin:/home/btc-backend/bin
      - ./app.js:/home/btc-backend/app.js
     networks:

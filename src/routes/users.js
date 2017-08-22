@@ -1,6 +1,7 @@
 const express = require('express');
 
 const db = require('../db');
+const logger = require('../utils/logger');
 
 const router = express.Router();
 
@@ -10,6 +11,8 @@ router.get('/', async (req, res) => {
     id: 1,
     username: 'testUN'
   }]);
+
+  logger.info('Sending user results: ', result.rows[0].message);
 
   res.send([result.rows[0].message]);
 });
