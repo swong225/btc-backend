@@ -1,5 +1,15 @@
-version: '3'
+version: '2'
 services:
+  postgres:
+    image: postgres:9.6.4
+    ports:
+     - "5432:5432"
+    env_file:
+      ./postgres.env
+  adminer:
+    image: adminer
+    ports:
+    - "8080:8080"
   backend:
     build: .
     ports:
@@ -10,22 +20,3 @@ services:
      - ./logs:/home/btc-backend/logs
      - ./bin:/home/btc-backend/bin
      - ./app.js:/home/btc-backend/app.js
-    networks:
-    - btc-network
-  postgres:
-    image: postgres:9.6.4
-    ports:
-     - "5432:5432"
-    env_file:
-      ./postgres.env
-    networks:
-    - btc-network
-  adminer:
-    image: adminer
-    ports:
-    - "8080:8080"
-    networks:
-    - btc-network
-
-networks:
-  btc-network:
