@@ -1,33 +1,18 @@
-version: '3'
+version: '2'
 services:
   backend:
-    build: .
+    build:
+      context: .
+      dockerfile: ./Dockerfile
     ports:
-     - "3001:3001"
+      - "3001:3001"
     volumes:
-     - ./node_modules:/home/btc-backend/node_modules
-     - ./routes:/home/btc-backend/routes
-     - ./bin:/home/btc-backend/bin
-     - ./public:/home/btc-backend/public
-     - ./config:/home/btc-backend/config
-     - ./db:/home/btc-backend/db
-     - ./app.js:/home/btc-backend/app.js
+      - ./src:/home/btc-backend/src
+      - ./node_modules:/home/btc-backend/node_modules
+      - ./logs:/home/btc-backend/logs
+      - ./bin:/home/btc-backend/bin
+      - ./app.js:/home/btc-backend/app.js
     networks:
-    - btc-network
-  postgres:
-    image: postgres:9.6.4
-    ports:
-     - "5432:5432"
-    env_file:
-      ./postgres.env
-    networks:
-    - btc-network
-  adminer:
-    image: adminer
-    ports:
-    - "8080:8080"
-    networks:
-    - btc-network
-
+      - btc-network
 networks:
   btc-network:
