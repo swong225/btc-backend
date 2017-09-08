@@ -3,11 +3,17 @@ const path = require('path');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 
 const index = require('./src/routes/index');
 const users = require('./src/routes/users');
+const auth = require('./src/routes/auth');
 
 const app = express();
+const jsonParser = bodyParser.json();
+
+// Initialize common middleware
+app.use(cors(), jsonParser);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'src', 'views'));
@@ -21,6 +27,7 @@ app.use(express.static(path.join(__dirname, 'src', 'public')));
 
 app.use('/', index);
 app.use('/users', users);
+app.use('/auth', auth);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
