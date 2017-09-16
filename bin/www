@@ -2,7 +2,7 @@
 const http = require('http');
 const debug = require('debug')('btc-backend:server');
 
-const app = require('../app');
+const app = require('../server');
 const logger = require('../src/utils/logger');
 
 /**

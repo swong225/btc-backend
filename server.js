@@ -9,10 +9,9 @@ const index = require('./src/routes/index');
 const auth = require('./src/routes/auth');
 
 const app = express();
-const jsonParser = bodyParser.json();
 
 // Initialize common middleware
-app.use(cors(), jsonParser);
+app.use(cors());
 
 // view engine setup
 app.set('views', path.join(__dirname, 'src', 'views'));
