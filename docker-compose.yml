@@ -11,7 +11,7 @@ services:
       - ./node_modules:/home/btc-backend/node_modules
       - ./logs:/home/btc-backend/logs
       - ./bin:/home/btc-backend/bin
-      - ./app.js:/home/btc-backend/app.js
+      - ./server.js:/home/btc-backend/server.js
     networks:
       - btc-network
 networks:

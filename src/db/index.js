@@ -1,18 +1,13 @@
-const { Pool } = require('pg');
+const Sequelize = require('sequelize');
 
-const { POSTGRES_USER, POSTGRES_HOST, POSTGRES_DB } = require('../config');
+const { POSTGRES_USER, POSTGRES_HOST, POSTGRES_PORT, POSTGRES_DB } = require('../config');
 const { POSTGRES_PASSWORD } = require('../config/secrets');
 
-const pool = new Pool({
-  user: POSTGRES_USER,
-  host: POSTGRES_HOST,
-  database: POSTGRES_DB,
-  password: POSTGRES_PASSWORD,
-  port: 5432
-});
+const url = `postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}`;
 
-pool.connect();
+const db = new Sequelize(url);
 
-module.exports = {
-  query: (text, params) => pool.query(text, params)
-};
+/* Load models and synchronize them */
+db.sync();
+
+module.exports = db;
