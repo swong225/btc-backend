@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 
-const { POSTGRES_USER, POSTGRES_HOST, POSTGRES_PORT, POSTGRES_DB } = require('../config');
-const { POSTGRES_PASSWORD } = require('../config/secrets');
+const { POSTGRES_HOST, POSTGRES_PORT } = require('../config');
+const { POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB } = require('../config/secrets');
 
 const url = `postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}`;
 
