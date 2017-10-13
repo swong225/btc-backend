@@ -8,13 +8,17 @@ module.exports = {
       const { user, order } = req.body;
       const { drink, teaType, flavor, size, price } = order;
 
-      const userId = await User.findOne({
+      let userResult = await User.findOne({
         where: { username: user },
         attributes: ['id']
       });
 
+      if (!userResult) {
+        userResult = await User.create({ username: 'temp' });
+      }
+
       await Order.create({
-        userId: userId.id || 'temp',
+        userId: userResult.id || 'temp',
         drink,
         teaType,
         flavor,
@@ -22,7 +26,7 @@ module.exports = {
         price
       });
 
-      return res.status(200).end();
+      return res.json({ userId: userResult.id, order });
     } catch (err) {
       logger.error('Error adding order: ', err);
 
