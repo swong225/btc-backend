@@ -32,5 +32,27 @@ module.exports = {
 
       return res.status(500).end();
     }
+  },
+
+  findAllOrdersForUser: async (req, res) => {
+    try {
+      const { username } = req.query;
+
+      const userId = await User.findOne({
+        where: { username },
+        attributes: ['id']
+      });
+
+      const orders = await Order.findAll({
+        where: { userId: userId.id },
+        attributes: ['drink', 'flavor', 'price', 'size', 'teaType']
+      });
+
+      return res.json({ orders });
+    } catch (err) {
+      logger.error('Error retrieving user orders: ', err);
+
+      return res.status(500).end();
+    }
   }
 };
