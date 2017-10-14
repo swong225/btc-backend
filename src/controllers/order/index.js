@@ -45,7 +45,7 @@ module.exports = {
 
       const orders = await Order.findAll({
         where: { userId: userId.id },
-        attributes: ['drink', 'flavor', 'price', 'size', 'teaType']
+        attributes: ['id', 'userId', 'drink', 'flavor', 'price', 'size', 'teaType']
       });
 
       return res.json({ orders });
