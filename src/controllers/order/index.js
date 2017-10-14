@@ -36,7 +36,7 @@ module.exports = {
 
   delete: async (req, res) => {
     try {
-      const { userId, orderId } = req.body;
+      const { orderId } = req.body;
 
       const deleteStatus = await Order.destroy({
         where: { id: orderId }
