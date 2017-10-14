@@ -7,6 +7,7 @@ const cors = require('cors');
 
 const index = require('./src/routes/index');
 const auth = require('./src/routes/auth');
+const order = require('./src/routes/order');
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use(express.static(path.join(__dirname, 'src', 'public')));
 
 app.use('/', index);
 app.use('/auth', auth);
+app.use('/order', order);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
