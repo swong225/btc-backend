@@ -10,6 +10,7 @@ const User = db.define('order', {
   },
   userId: { type: Sequelize.STRING },
   drink: { type: Sequelize.STRING },
+  isTea: { type: Sequelize.BOOLEAN },
   teaType: { type: Sequelize.STRING },
   flavor: { type: Sequelize.STRING },
   size: { type: Sequelize.STRING },
