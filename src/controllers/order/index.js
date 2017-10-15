@@ -6,7 +6,7 @@ module.exports = {
   add: async (req, res) => {
     try {
       const { user, order } = req.body;
-      const { drink, teaType, flavor, size, price } = order;
+      const { drink, isTea, teaType, flavor, size, price } = order;
 
       let userResult = await User.findOne({
         where: { username: user },
@@ -17,18 +17,63 @@ module.exports = {
         userResult = await User.create({ username: 'temp' });
       }
 
-      await Order.create({
+      const createdOrder = await Order.create({
         userId: userResult.id || 'temp',
         drink,
+        isTea,
         teaType,
         flavor,
         size,
         price
       });
 
-      return res.json({ userId: userResult.id, order });
+      return res.json({ userId: userResult.id, order: createdOrder });
     } catch (err) {
       logger.error('Error adding order: ', err);
+
+      return res.status(500).end();
+    }
+  },
+
+  update: async (req, res) => {
+    try {
+      const { orderId, updateOrder } = req.body;
+      const { drink, isTea, teaType, flavor, size, price } = updateOrder;
+
+      const [affectedCount, affectedRows] = await Order.update(
+        {
+          drink,
+          isTea,
+          teaType,
+          flavor,
+          size,
+          price
+        },
+        {
+          where: { id: orderId },
+          returning: true
+        }
+      );
+
+      return res.json({ ordersUpdated: affectedCount, updatedOrder: affectedRows });
+    } catch (err) {
+      logger.error('Error deleting order: ', err);
+
+      return res.status(500).end();
+    }
+  },
+
+  delete: async (req, res) => {
+    try {
+      const { orderId } = req.body;
+
+      const deleteStatus = await Order.destroy({
+        where: { id: orderId }
+      });
+
+      return res.json({ deleteStatus });
+    } catch (err) {
+      logger.error('Error deleting order: ', err);
 
       return res.status(500).end();
     }
@@ -45,7 +90,7 @@ module.exports = {
 
       const orders = await Order.findAll({
         where: { userId: userId.id },
-        attributes: ['drink', 'flavor', 'price', 'size', 'teaType']
+        attributes: ['id', 'isTea', 'userId', 'drink', 'flavor', 'price', 'size', 'teaType']
       });
 
       return res.json({ orders });
