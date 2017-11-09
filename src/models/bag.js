@@ -5,7 +5,10 @@ const Bag = (db, Sequelize) =>
       primaryKey: true,
       defaultValue: Sequelize.DataTypes.UUIDV4
     },
-    totalPrice: { type: Sequelize.DECIMAL }
+    totalPrice: {
+      type: Sequelize.DECIMAL,
+      defaultValue: 0
+    }
   });
 
 module.exports = Bag;

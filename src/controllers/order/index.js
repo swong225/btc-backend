@@ -48,6 +48,7 @@ module.exports = {
       // add the created drink to the bag
       const activeBag = await Bag.findOne({ where: { id: activeBagId } });
       await activeBag.addOrder(createdOrder);
+      await activeBag.increment(['totalPrice'], { by: price });
 
       return res.json({ userId: userResult.id, order: createdOrder });
     } catch (err) {
@@ -89,9 +90,14 @@ module.exports = {
     try {
       const { orderId } = req.body;
 
+      const deletedOrder = await Order.findOne({ where: { id: orderId } });
+      const affectedBag = await Bag.findOne({ where: { id: deletedOrder.bagId } });
+
       const deleteStatus = await Order.destroy({
         where: { id: orderId }
       });
+
+      await affectedBag.decrement(['totalPrice'], { by: deletedOrder.price });
 
       return res.json({ deleteStatus });
     } catch (err) {

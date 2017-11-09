@@ -6,6 +6,7 @@ const Bag = db.model('bag');
 const logger = require('../../utils/logger');
 
 module.exports = {
+  // finds the drinks for the active bag for the requested user
   findAllOrdersForUser: async (req, res) => {
     try {
       const { username } = req.query;
