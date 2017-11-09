@@ -10,6 +10,7 @@ const auth = require('./src/routes/auth');
 const order = require('./src/routes/order');
 
 const app = express();
+const db = require('./src/db');
 
 // Initialize common middleware
 app.use(cors());

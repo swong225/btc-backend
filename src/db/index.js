@@ -7,6 +7,13 @@ const url = `postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:$
 
 const db = new Sequelize(url);
 
+const User = require('../models/user')(db, Sequelize);
+const Bag = require('../models/bag')(db, Sequelize);
+const Order = require('../models/order')(db, Sequelize);
+
+User.hasMany(Bag, { underscored: true });
+Bag.hasMany(Order, { underscored: true });
+
 /* Load models and synchronize them */
 db.sync();
 
