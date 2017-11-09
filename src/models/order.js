@@ -5,7 +5,6 @@ const Order = (db, Sequelize) =>
       primaryKey: true,
       defaultValue: Sequelize.DataTypes.UUIDV4
     },
-    userId: { type: Sequelize.STRING },
     drink: { type: Sequelize.STRING },
     isTea: { type: Sequelize.BOOLEAN },
     teaType: { type: Sequelize.STRING },

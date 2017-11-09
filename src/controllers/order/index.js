@@ -12,20 +12,22 @@ module.exports = {
       const { drink, isTea, teaType, flavor, size, price } = order;
       let activeBagId;
 
+      // determine the user to save the order to, if none exists, create a temp user
       let userResult = await User.findOne({ where: { username: user } });
-
       if (!userResult) {
         userResult = await User.create({ username: 'temp' });
       }
 
+      // determine the active bag for the user
       if (userResult.activeBagId) {
         activeBagId = userResult.activeBagId;
       } else {
         // if the user does not have an active bag, create a new one and associate with the user
-        activeBagId = await Bag.create();
+        const activeBag = await Bag.create();
+        activeBagId = activeBag.id;
 
         await User.update(
-          { activeBagId: activeBagId.id },
+          { activeBagId },
           {
             where: { id: userResult.id },
             returning: true
@@ -43,6 +45,7 @@ module.exports = {
         price
       });
 
+      // add the created drink to the bag
       const activeBag = await Bag.findOne({ where: { id: activeBagId } });
       await activeBag.addOrder(createdOrder);
 
@@ -102,15 +105,13 @@ module.exports = {
     try {
       const { username } = req.query;
 
-      const userId = await User.findOne({
+      const user = await User.findOne({
         where: { username },
-        attributes: ['id']
+        attributes: ['activeBagId']
       });
 
-      const orders = await Order.findAll({
-        where: { userId: userId.id },
-        attributes: ['id', 'isTea', 'userId', 'drink', 'flavor', 'price', 'size', 'teaType']
-      });
+      const activeBag = await Bag.findOne({ where: { id: user.activeBagId } });
+      const orders = activeBag ? await activeBag.getOrders() : [];
 
       return res.json({ orders });
     } catch (err) {
