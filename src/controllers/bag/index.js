@@ -5,9 +5,23 @@ const Bag = db.model('bag');
 
 const logger = require('../../utils/logger');
 
+const updateByActiveBagId = async activeBagId => {
+  const activeBag = await Bag.findOne({ where: { id: activeBagId } });
+  const orders = activeBag ? await activeBag.getOrders() : [];
+
+  let totalPrice = 0;
+  orders.forEach(order => {
+    totalPrice += Number(order.price);
+  });
+
+  await activeBag.update({ totalPrice }, { where: { id: activeBagId } });
+
+  return { orders, totalPrice };
+};
+
 module.exports = {
   // finds the drinks for the active bag for the requested user
-  findAllOrdersForUser: async (req, res) => {
+  findActiveBagForUser: async (req, res) => {
     try {
       const { username } = req.query;
 
@@ -16,14 +30,14 @@ module.exports = {
         attributes: ['activeBagId']
       });
 
-      const activeBag = await Bag.findOne({ where: { id: user.activeBagId } });
-      const orders = activeBag ? await activeBag.getOrders() : [];
-
+      const { orders, totalPrice } = await updateByActiveBagId(user.activeBagId);
+console.log("fetch all totalPrice = ", totalPrice)
       return res.json({ orders });
     } catch (err) {
       logger.error('Error retrieving user orders: ', err);
 
       return res.status(500).end();
     }
-  }
+  },
+  updateByActiveBagId
 };
