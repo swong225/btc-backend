@@ -1,5 +1,7 @@
-const Order = require('../../models/order');
-const User = require('../../models/user');
+const db = require('../../db');
+
+const User = db.model('user');
+const Order = db.model('order');
 const logger = require('../../utils/logger');
 
 module.exports = {
