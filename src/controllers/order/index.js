@@ -1,6 +1,7 @@
 const db = require('../../db');
 
 const User = db.model('user');
+const Bag = db.model('bag');
 const Order = db.model('order');
 const logger = require('../../utils/logger');
 
@@ -9,14 +10,27 @@ module.exports = {
     try {
       const { user, order } = req.body;
       const { drink, isTea, teaType, flavor, size, price } = order;
+      let activeBagId;
 
-      let userResult = await User.findOne({
-        where: { username: user },
-        attributes: ['id']
-      });
+      let userResult = await User.findOne({ where: { username: user } });
 
       if (!userResult) {
         userResult = await User.create({ username: 'temp' });
+      }
+
+      if (userResult.activeBagId) {
+        activeBagId = userResult.activeBagId;
+      } else {
+        // if the user does not have an active bag, create a new one and associate with the user
+        activeBagId = await Bag.create();
+
+        await User.update(
+          { activeBagId: activeBagId.id },
+          {
+            where: { id: userResult.id },
+            returning: true
+          }
+        );
       }
 
       const createdOrder = await Order.create({
@@ -28,6 +42,9 @@ module.exports = {
         size,
         price
       });
+
+      const activeBag = await Bag.findOne({ where: { id: activeBagId } });
+      await activeBag.addOrder(createdOrder);
 
       return res.json({ userId: userResult.id, order: createdOrder });
     } catch (err) {

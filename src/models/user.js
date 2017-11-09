@@ -7,7 +7,9 @@ const User = (db, Sequelize) =>
     },
     username: { type: Sequelize.STRING },
     email: { type: Sequelize.STRING },
-    password: { type: Sequelize.STRING }
+    password: { type: Sequelize.STRING },
+    activeBagId: { type: Sequelize.STRING },
+    purchasedBags: { type: Sequelize.ARRAY(Sequelize.STRING) }
   });
 
 module.exports = User;
