@@ -51,10 +51,9 @@ module.exports = {
       const activeBag = await Bag.findOne({ where: { id: activeBagId } });
       await activeBag.addOrder(createdOrder);
 
-      BagController.updateByActiveBagId(activeBagId);
-      // await activeBag.increment(['totalPrice'], { by: price });
+      const { totalPrice } = await BagController.updateByActiveBagId(activeBagId);
 
-      return res.json({ userId: userResult.id, order: createdOrder });
+      return res.json({ createdOrder, totalPrice });
     } catch (err) {
       logger.error('Error adding order: ', err);
 
@@ -82,9 +81,9 @@ module.exports = {
         }
       );
 
-      const updateBag = await BagController.updateByActiveBagId(affectedRows[0].bagId);
+      const { totalPrice } = await BagController.updateByActiveBagId(affectedRows[0].bagId);
 
-      return res.json({ updatedOrder: affectedRows });
+      return res.json({ updatedOrder: affectedRows[0], totalPrice });
     } catch (err) {
       logger.error('Error deleting order: ', err);
 
@@ -103,11 +102,9 @@ module.exports = {
         where: { id: orderId }
       });
 
-      BagController.updateByActiveBagId(affectedBag.id);
+      const { totalPrice } = await BagController.updateByActiveBagId(affectedBag.id);
 
-      // await affectedBag.decrement(['totalPrice'], { by: deletedOrder.price });
-
-      return res.json({ deleteStatus });
+      return res.json({ deleteStatus, totalPrice });
     } catch (err) {
       logger.error('Error deleting order: ', err);
 

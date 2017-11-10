@@ -30,9 +30,9 @@ module.exports = {
         attributes: ['activeBagId']
       });
 
-      const { orders, totalPrice } = await updateByActiveBagId(user.activeBagId);
-console.log("fetch all totalPrice = ", totalPrice)
-      return res.json({ orders });
+      const activeBag = await updateByActiveBagId(user.activeBagId);
+
+      return res.json(activeBag);
     } catch (err) {
       logger.error('Error retrieving user orders: ', err);
 
