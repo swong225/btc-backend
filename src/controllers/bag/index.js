@@ -61,9 +61,10 @@ module.exports = {
       const { username } = req.body;
 
       const user = await User.findOne({ where: { username } });
+      const activeBagId = user.activeBagId;
       const purchasedBagIds = user.purchasedBagIds;
 
-      purchasedBagIds.push(user.activeBagId);
+      purchasedBagIds.push(activeBagId);
 
       await User.update(
         {
@@ -73,7 +74,9 @@ module.exports = {
         { where: { username } }
       );
 
-      return res.status(200).end();
+      const purchasedBag = await Bag.findOne({ where: { id: activeBagId } });
+
+      return res.status(200).json({ purchasedBag, username });
     } catch (err) {
       logger.error('Error retrieving user orders: ', err);
 
