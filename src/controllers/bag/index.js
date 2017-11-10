@@ -19,16 +19,32 @@ const updateByActiveBagId = async activeBagId => {
   return { orders, totalPrice };
 };
 
+const createBagForUserId = async userId => {
+  // if the user does not have an active bag, create a new one and associate with the user
+  const newBag = await Bag.create();
+
+  await User.update(
+    { activeBagId: newBag.id },
+    { where: { id: userId } }
+  );
+
+  return newBag;
+};
+
 module.exports = {
   // finds the drinks for the active bag for the requested user
   findActiveBagForUser: async (req, res) => {
     try {
       const { username } = req.query;
 
-      const user = await User.findOne({
-        where: { username },
-        attributes: ['activeBagId']
-      });
+      const user = await User.findOne({ where: { username } });
+
+      // if there is no active bag, create a new empty bag
+      if (!user.activeBagId) {
+        const newBag = await createBagForUserId(user.id);
+
+        return res.json(newBag);
+      }
 
       const activeBag = await updateByActiveBagId(user.activeBagId);
 
@@ -51,7 +67,7 @@ module.exports = {
 
       await User.update(
         {
-          activeBagId: '',
+          activeBagId: null,
           purchasedBagIds
         },
         { where: { username } }
@@ -65,5 +81,6 @@ module.exports = {
     }
   },
 
-  updateByActiveBagId
+  updateByActiveBagId,
+  createBagForUserId
 };

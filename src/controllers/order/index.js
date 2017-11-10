@@ -25,16 +25,9 @@ module.exports = {
         activeBagId = userResult.activeBagId;
       } else {
         // if the user does not have an active bag, create a new one and associate with the user
-        const activeBag = await Bag.create();
-        activeBagId = activeBag.id;
+        const newBag = await BagController.createBagForUserId(userResult.id);
 
-        await User.update(
-          { activeBagId },
-          {
-            where: { id: userResult.id },
-            returning: true
-          }
-        );
+        activeBagId = newBag.id;
       }
 
       const createdOrder = await Order.create({
