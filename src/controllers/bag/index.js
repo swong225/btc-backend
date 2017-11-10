@@ -35,7 +35,7 @@ module.exports = {
   // finds the drinks for the active bag for the requested user
   findActiveBagForUser: async (req, res) => {
     try {
-      const { username } = req.query;
+      const { username } = req.body;
 
       const user = await User.findOne({ where: { username } });
 
