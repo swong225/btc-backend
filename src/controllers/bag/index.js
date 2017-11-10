@@ -39,5 +39,31 @@ module.exports = {
       return res.status(500).end();
     }
   },
+
+  checkout: async (req, res) => {
+    try {
+      const { username } = req.body;
+
+      const user = await User.findOne({ where: { username } });
+      const purchasedBagIds = user.purchasedBagIds;
+
+      purchasedBagIds.push(user.activeBagId);
+
+      await User.update(
+        {
+          activeBagId: '',
+          purchasedBagIds
+        },
+        { where: { username } }
+      );
+
+      return res.status(200).end();
+    } catch (err) {
+      logger.error('Error retrieving user orders: ', err);
+
+      return res.status(500).end();
+    }
+  },
+
   updateByActiveBagId
 };
