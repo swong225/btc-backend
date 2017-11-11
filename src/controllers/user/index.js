@@ -1,7 +1,9 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const User = require('../../models/user');
+const db = require('../../db');
+
+const User = db.model('user');
 const config = require('../../config');
 const logger = require('../../utils/logger');
 const { JWT_PASSPHRASE } = require('../../config/secrets');
@@ -47,6 +49,7 @@ module.exports = {
       return res.status(500).end();
     }
   },
+
   findAll: async (req, res) => {
     try {
       const users = await User.findAll();

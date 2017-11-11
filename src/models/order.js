@@ -1,20 +1,16 @@
-const Sequelize = require('sequelize');
+const Order = (db, Sequelize) =>
+  db.define('order', {
+    id: {
+      type: Sequelize.UUID,
+      primaryKey: true,
+      defaultValue: Sequelize.DataTypes.UUIDV4
+    },
+    drink: { type: Sequelize.STRING },
+    isTea: { type: Sequelize.BOOLEAN },
+    teaType: { type: Sequelize.STRING },
+    flavor: { type: Sequelize.STRING },
+    size: { type: Sequelize.STRING },
+    price: { type: Sequelize.DECIMAL }
+  });
 
-const db = require('../db');
-
-const User = db.define('order', {
-  id: {
-    type: Sequelize.UUID,
-    primaryKey: true,
-    defaultValue: Sequelize.DataTypes.UUIDV4
-  },
-  userId: { type: Sequelize.STRING },
-  drink: { type: Sequelize.STRING },
-  isTea: { type: Sequelize.BOOLEAN },
-  teaType: { type: Sequelize.STRING },
-  flavor: { type: Sequelize.STRING },
-  size: { type: Sequelize.STRING },
-  price: { type: Sequelize.DECIMAL }
-});
-
-module.exports = User;
+module.exports = Order;

@@ -7,9 +7,11 @@ const cors = require('cors');
 
 const index = require('./src/routes/index');
 const auth = require('./src/routes/auth');
+const bag = require('./src/routes/bag');
 const order = require('./src/routes/order');
 
 const app = express();
+const db = require('./src/db');
 
 // Initialize common middleware
 app.use(cors());
@@ -26,6 +28,7 @@ app.use(express.static(path.join(__dirname, 'src', 'public')));
 
 app.use('/', index);
 app.use('/auth', auth);
+app.use('/bag', bag);
 app.use('/order', order);
 
 // catch 404 and forward to error handler
