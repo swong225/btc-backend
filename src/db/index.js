@@ -1,10 +1,8 @@
 const Sequelize = require('sequelize');
 
-const { POSTGRES_HOST, POSTGRES_PORT, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB } = require('../config');
+const { DATABASE_URL } = require('../config');
 
-const url = `postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}`;
-
-const db = new Sequelize(url);
+const db = new Sequelize(DATABASE_URL);
 
 const User = require('../models/user')(db, Sequelize);
 const Bag = require('../models/bag')(db, Sequelize);
