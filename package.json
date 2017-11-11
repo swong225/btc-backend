@@ -6,6 +6,9 @@
     "start": "supervisor -RV bin/www",
     "lint": "eslint './**' || exit 0"
   },
+  "engines": {
+    "node": ">= 7.6.0"
+  },
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "body-parser": "~1.17.1",
