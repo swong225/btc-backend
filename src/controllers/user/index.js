@@ -6,7 +6,7 @@ const db = require('../../db');
 const User = db.model('user');
 const config = require('../../config');
 const logger = require('../../utils/logger');
-const { JWT_PASSPHRASE } = require('../../config/secrets');
+const { JWT_PASSPHRASE } = require('../../config');
 
 module.exports = {
   login: async (req, res) => {
