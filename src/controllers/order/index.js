@@ -11,7 +11,7 @@ module.exports = {
   add: async (req, res) => {
     try {
       const { user, order } = req.body;
-      const { drink, isTea, teaType, flavor, size, price } = order;
+      const { drink, isTea, teaType, flavor, size, price, chosenToppings } = order;
       let activeBagId;
 
       // determine the user to save the order to, if none exists, create a temp user
@@ -37,6 +37,7 @@ module.exports = {
         teaType,
         flavor,
         size,
+        chosenToppings,
         price
       });
 
@@ -57,7 +58,7 @@ module.exports = {
   update: async (req, res) => {
     try {
       const { orderId, updateOrder } = req.body;
-      const { drink, isTea, teaType, flavor, size, price } = updateOrder;
+      const { drink, isTea, teaType, flavor, size, price, chosenToppings } = updateOrder;
 
       const [affectedCount, affectedRows] = await Order.update(
         {
@@ -66,6 +67,7 @@ module.exports = {
           teaType,
           flavor,
           size,
+          chosenToppings,
           price
         },
         {

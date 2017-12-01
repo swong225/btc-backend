@@ -10,7 +10,8 @@ const Order = (db, Sequelize) =>
     teaType: { type: Sequelize.STRING },
     flavor: { type: Sequelize.STRING },
     size: { type: Sequelize.STRING },
-    price: { type: Sequelize.DECIMAL }
+    price: { type: Sequelize.DECIMAL },
+    chosenToppings: { type: Sequelize.ARRAY(Sequelize.STRING) }
   });
 
 module.exports = Order;
