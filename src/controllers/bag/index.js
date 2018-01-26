@@ -35,7 +35,7 @@ module.exports = {
   // finds the drinks for the active bag for the requested user
   findActiveBagForUser: async (req, res) => {
     try {
-      const { username } = req.body;
+      const { username } = req.query;
 
       const user = await User.findOne({ where: { username } });
 
@@ -77,6 +77,28 @@ module.exports = {
       const purchasedBag = await Bag.findOne({ where: { id: activeBagId } });
 
       return res.status(200).json({ purchasedBag, username });
+    } catch (err) {
+      logger.error('Error retrieving user orders: ', err);
+
+      return res.status(500).end();
+    }
+  },
+
+  // returns an array of previously purchased bags
+  findAllBagsForUser: async (req, res) => {
+    try {
+      const { username } = req.query;
+
+      const user = await User.findOne({ where: { username } });
+      const { purchasedBagIds = [] } = user;
+
+      const purchasedBagsPromises = purchasedBagIds.map(purchasedBagId =>
+        Bag.findOne({ where: { id: purchasedBagId } })
+      );
+
+      const purchasedBags = await Promise.all(purchasedBagsPromises);
+
+      return res.json(purchasedBags);
     } catch (err) {
       logger.error('Error retrieving user orders: ', err);
 
