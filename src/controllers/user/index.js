@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const db = require('../../db');
 
 const User = db.model('user');
+const Bag = db.model('bag');
 const config = require('../../config');
 const logger = require('../../utils/logger');
 const { JWT_PASSPHRASE } = require('../../config');
@@ -57,6 +58,28 @@ module.exports = {
       return res.json(users);
     } catch (err) {
       logger.error('Error retrieving users:', err);
+      return res.status(500).end();
+    }
+  },
+
+  // returns an array of previously purchased bags
+  findAllBagsForUser: async (req, res) => {
+    try {
+      const { username } = req.query;
+
+      const user = await User.findOne({ where: { username } });
+      const { purchasedBagIds = [] } = user;
+
+      const purchasedBagsPromises = purchasedBagIds.map(purchasedBagId =>
+        Bag.findOne({ where: { id: purchasedBagId } })
+      );
+
+      const purchasedBags = await Promise.all(purchasedBagsPromises);
+
+      return res.json(purchasedBags);
+    } catch (err) {
+      logger.error('Error retrieving user orders: ', err);
+
       return res.status(500).end();
     }
   }

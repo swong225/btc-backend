@@ -9,6 +9,7 @@ const index = require('./src/routes/index');
 const auth = require('./src/routes/auth');
 const bag = require('./src/routes/bag');
 const order = require('./src/routes/order');
+const user = require('./src/routes/user');
 
 const app = express();
 const db = require('./src/db');
@@ -30,6 +31,7 @@ app.use('/', index);
 app.use('/auth', auth);
 app.use('/bag', bag);
 app.use('/order', order);
+app.use('/user', user);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
