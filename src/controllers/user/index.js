@@ -81,6 +81,9 @@ module.exports = {
 
       const purchasedBags = await Promise.all(purchasedBagsPromises);
 
+      // sort result array with newest at front
+      purchasedBags.sort((a, b) => b.updatedAt - a.updatedAt);
+
       return res.json(purchasedBags);
     } catch (err) {
       logger.error('Error retrieving user orders: ', err);
