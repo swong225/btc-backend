@@ -5,6 +5,8 @@ const db = require('../../db');
 
 const User = db.model('user');
 const Bag = db.model('bag');
+const Order = db.model('order');
+
 const config = require('../../config');
 const logger = require('../../utils/logger');
 const { JWT_PASSPHRASE } = require('../../config');
@@ -70,9 +72,12 @@ module.exports = {
       const user = await User.findOne({ where: { username } });
       const { purchasedBagIds = [] } = user;
 
-      const purchasedBagsPromises = purchasedBagIds.map(purchasedBagId =>
-        Bag.findOne({ where: { id: purchasedBagId } })
-      );
+      const purchasedBagsPromises = purchasedBagIds.map(async purchasedBagId => {
+        const bag = await Bag.findOne({ where: { id: purchasedBagId } });
+        const drinksCount = await Order.count({ where: { bagId: purchasedBagId } });
+
+        return Object.assign({}, bag.dataValues, { drinksCount });
+      });
 
       const purchasedBags = await Promise.all(purchasedBagsPromises);
 
