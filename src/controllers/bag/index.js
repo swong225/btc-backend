@@ -23,10 +23,9 @@ const createBagForUserId = async userId => {
   // if the user does not have an active bag, create a new one and associate with the user
   const newBag = await Bag.create();
 
-  await User.update(
-    { activeBagId: newBag.id },
-    { where: { id: userId } }
-  );
+  const user = await User.findOne({ where: { id: userId } });
+  await user.update({ activeBagId: newBag.id });
+  await user.addBag(newBag.id);
 
   return newBag;
 };
