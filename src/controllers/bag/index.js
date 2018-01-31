@@ -83,6 +83,20 @@ module.exports = {
     }
   },
 
+  findOrderedBag: async (req, res) => {
+    try {
+      const { bagId } = req.query;
+
+      const orderedBag = await Bag.findOne({ where: { id: bagId } });
+
+      return res.json(orderedBag);
+    } catch (err) {
+      logger.error('Error retrieving bag: ', err);
+
+      return res.status(500).end();
+    }
+  },
+
   updateByActiveBagId,
   createBagForUserId
 };
