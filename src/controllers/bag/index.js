@@ -87,7 +87,8 @@ module.exports = {
     try {
       const { bagId } = req.query;
 
-      const orderedBag = await Bag.findOne({ where: { id: bagId } });
+      const bag = await Bag.findOne({ where: { id: bagId } });
+      const orderedBag = await bag.getOrders();
 
       return res.json(orderedBag);
     } catch (err) {
