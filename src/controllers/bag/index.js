@@ -120,6 +120,7 @@ module.exports = {
       });
 
       await Promise.all(addingOrdersPromises);
+      await updateByActiveBagId(activeBagId);
 
       const { totalPrice } = await await Bag.findOne({ where: { id: activeBagId }, raw: true });
       const newOrders = await activeBag.getOrders({ raw: true });
