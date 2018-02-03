@@ -9,6 +9,7 @@ const Bag = require('../models/bag')(db, Sequelize);
 const Order = require('../models/order')(db, Sequelize);
 
 Bag.hasMany(Order);
+User.hasMany(Bag);
 
 /* Load models and synchronize them */
 db.sync();
