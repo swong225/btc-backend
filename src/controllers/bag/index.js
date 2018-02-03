@@ -2,6 +2,7 @@ const db = require('../../db');
 
 const User = db.model('user');
 const Bag = db.model('bag');
+const Order = db.model('order');
 
 const logger = require('../../utils/logger');
 
@@ -47,7 +48,7 @@ module.exports = {
 
       const activeBag = await updateByActiveBagId(user.activeBagId);
 
-      return res.json(activeBag);
+      return res.json({ activeBag, activeBagId: user.activeBagId });
     } catch (err) {
       logger.error('Error retrieving user orders: ', err);
 
@@ -91,6 +92,39 @@ module.exports = {
       const orderedBag = await bag.getOrders();
 
       return res.json(orderedBag);
+    } catch (err) {
+      logger.error('Error retrieving bag: ', err);
+
+      return res.status(500).end();
+    }
+  },
+
+  addReorderedBagItems: async (req, res) => {
+    try {
+      const { user: username, bagId } = req.body;
+
+      const bag = await Bag.findOne({ where: { id: bagId } });
+      const reorderedBag = await bag.getOrders({ raw: true });
+
+      const { activeBagId } = await User.findOne({ where: { username }, raw: true });
+      const activeBag = await Bag.findOne({ where: { id: activeBagId } });
+
+      const addingOrdersPromises = reorderedBag.map(async drink => {
+        const newDrink = Object.assign({}, drink);
+        delete newDrink.id;
+        delete newDrink.bagId;
+        const reorder = await Order.create(newDrink);
+        await activeBag.addOrder(reorder);
+      });
+
+      await Promise.all(addingOrdersPromises);
+
+      const { totalPrice } = await await Bag.findOne({ where: { id: activeBagId }, raw: true });
+      const newOrders = await activeBag.getOrders({ raw: true });
+
+      const newBag = Object.assign({}, { drinks: newOrders }, { totalCost: totalPrice });
+
+      return res.json(newBag);
     } catch (err) {
       logger.error('Error retrieving bag: ', err);
 
