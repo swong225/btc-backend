@@ -66,9 +66,11 @@ module.exports = {
 
       purchasedBagIds.push(activeBagId);
 
+      const newBag = await createBagForUserId(user.id);
+
       await User.update(
         {
-          activeBagId: null,
+          activeBagId: newBag.id,
           purchasedBagIds
         },
         { where: { username } }
@@ -76,7 +78,7 @@ module.exports = {
 
       const purchasedBag = await Bag.findOne({ where: { id: activeBagId } });
 
-      return res.status(200).json({ purchasedBag, username });
+      return res.status(200).json({ purchasedBag, username, newBagId: newBag.id });
     } catch (err) {
       logger.error('Error retrieving user orders: ', err);
 
