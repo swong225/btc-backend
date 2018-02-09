@@ -41,9 +41,9 @@ module.exports = {
 
   create: async (req, res) => {
     try {
-      const { username, password, email } = req.body;
+      const { username, password, phone } = req.body;
       const hashedPassword = await bcrypt.hash(password, config.SALT_ROUNDS);
-      await User.create({ username, email, password: hashedPassword });
+      await User.create({ username, phone, password: hashedPassword });
 
       return res.status(200).end();
     } catch (err) {
