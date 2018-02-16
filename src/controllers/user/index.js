@@ -53,6 +53,29 @@ module.exports = {
     }
   },
 
+  edit: async (req, res) => {
+    try {
+      const { userId, username, password, phone } = req.body;
+      const hashedPassword = await bcrypt.hash(password, config.SALT_ROUNDS);
+      const updatedUser = await User.update({
+        username,
+        phone,
+        password: hashedPassword
+      },
+      {
+        where: { id: userId },
+        returning: true,
+        plain: true
+      });
+
+      return res.json({ updatedUser: updatedUser[1] });
+    } catch (err) {
+      logger.error('Error creating new user: ', err);
+
+      return res.status(500).end();
+    }
+  },
+
   findAll: async (req, res) => {
     try {
       const users = await User.findAll();

@@ -6,7 +6,6 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 
 const index = require('./src/routes/index');
-const auth = require('./src/routes/auth');
 const bag = require('./src/routes/bag');
 const order = require('./src/routes/order');
 const user = require('./src/routes/user');
@@ -28,7 +27,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'src', 'public')));
 
 app.use('/', index);
-app.use('/auth', auth);
 app.use('/bag', bag);
 app.use('/order', order);
 app.use('/user', user);
