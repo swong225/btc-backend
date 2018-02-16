@@ -56,21 +56,42 @@ module.exports = {
   edit: async (req, res) => {
     try {
       const { userId, username, password, phone } = req.body;
+
       const hashedPassword = await bcrypt.hash(password, config.SALT_ROUNDS);
-      const updatedUser = await User.update({
+      const query = password ? {
         username,
         phone,
         password: hashedPassword
-      },
-      {
+      } : { username, phone };
+
+      const updatedUser = await User.update(query, {
         where: { id: userId },
         returning: true,
         plain: true
       });
 
-      return res.json({ updatedUser: updatedUser[1] });
+      const token = jwt.sign({ sub: updatedUser.id }, JWT_PASSPHRASE, {
+        issuer: config.JWT_ISSUER,
+        expiresIn: config.JWT_EXP
+      });
+
+      return res.json({ token, updatedUser: updatedUser[1] });
     } catch (err) {
       logger.error('Error creating new user: ', err);
+
+      return res.status(500).end();
+    }
+  },
+
+  refresh: async (req, res) => {
+    try {
+      const { userId } = req.query;
+
+      const user = await User.findOne({ where: { id: userId } });
+
+      return res.json({ user });
+    } catch (err) {
+      logger.error('Error refreshing user: ', err);
 
       return res.status(500).end();
     }
