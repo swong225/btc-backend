@@ -11,23 +11,27 @@ const config = require('../../config');
 const logger = require('../../utils/logger');
 const { JWT_PASSPHRASE } = require('../../config');
 
+const createToken = userId => (
+  jwt.sign({ sub: userId }, JWT_PASSPHRASE, {
+    issuer: config.JWT_ISSUER,
+    expiresIn: config.JWT_EXP
+  })
+);
+
 module.exports = {
   login: async (req, res) => {
     try {
       const { username, password } = req.body;
-      const user = await User.findOne({ where: { username } });
+      const user = await User.findOne({ where: { username }, raw: true });
 
       if (!user) res.status(400).end();
 
       const validPassword = await bcrypt.compare(password, user.password);
 
       if (validPassword) {
-        const token = jwt.sign({ sub: user.id }, JWT_PASSPHRASE, {
-          issuer: config.JWT_ISSUER,
-          expiresIn: config.JWT_EXP
-        });
+        const token = createToken(user.id);
 
-        delete user.dataValues.password;
+        delete user.password;
 
         return res.json({ token, user });
       }
@@ -43,9 +47,13 @@ module.exports = {
     try {
       const { username, password, phone } = req.body;
       const hashedPassword = await bcrypt.hash(password, config.SALT_ROUNDS);
-      await User.create({ username, phone, password: hashedPassword });
+      const newUser = await User.create({ username, phone, password: hashedPassword });
 
-      return res.status(200).end();
+      const token = createToken(newUser.id);
+
+      delete newUser.dataValues.password;
+
+      return res.json({ token, user: newUser });
     } catch (err) {
       logger.error('Error creating new user: ', err);
 
@@ -70,10 +78,7 @@ module.exports = {
         plain: true
       });
 
-      const token = jwt.sign({ sub: updatedUser.id }, JWT_PASSPHRASE, {
-        issuer: config.JWT_ISSUER,
-        expiresIn: config.JWT_EXP
-      });
+      const token = createToken(updatedUser.id);
 
       return res.json({ token, updatedUser: updatedUser[1] });
     } catch (err) {
