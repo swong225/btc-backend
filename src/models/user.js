@@ -5,7 +5,7 @@ const User = (db, Sequelize) =>
       primaryKey: true,
       defaultValue: Sequelize.DataTypes.UUIDV4
     },
-    username: { type: Sequelize.STRING },
+    username: { type: Sequelize.STRING, unique: true },
     phone: { type: Sequelize.STRING },
     password: { type: Sequelize.STRING },
     activeBagId: { type: Sequelize.STRING },

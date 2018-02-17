@@ -57,7 +57,10 @@ module.exports = {
     } catch (err) {
       logger.error('Error creating new user: ', err);
 
-      return res.status(500).end();
+      if (err.name === 'SequelizeUniqueConstraintError') {
+        return res.status(500).send('Email Already Registered');
+      }
+      return res.status(500).send('Error Creating User');
     }
   },
 
@@ -84,7 +87,10 @@ module.exports = {
     } catch (err) {
       logger.error('Error creating new user: ', err);
 
-      return res.status(500).end();
+      if (err.name === 'SequelizeUniqueConstraintError') {
+        return res.status(500).send('Email Already Registered');
+      }
+      return res.status(500).send('Error Creating User');
     }
   },
 
