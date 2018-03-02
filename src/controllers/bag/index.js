@@ -35,9 +35,9 @@ module.exports = {
   // finds the drinks for the active bag for the requested user
   findActiveBagForUser: async (req, res) => {
     try {
-      const { username } = req.query;
+      const { userId } = req.query;
 
-      const user = await User.findOne({ where: { username } });
+      const user = await User.findOne({ where: { id: userId } });
 
       // if there is no active bag, create a new empty bag
       if (!user.activeBagId) {
