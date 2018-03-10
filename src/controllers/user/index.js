@@ -11,12 +11,11 @@ const config = require('../../config');
 const logger = require('../../utils/logger');
 const { JWT_PASSPHRASE } = require('../../config');
 
-const createToken = userId => (
+const createToken = userId =>
   jwt.sign({ sub: userId }, JWT_PASSPHRASE, {
     issuer: config.JWT_ISSUER,
     expiresIn: config.JWT_EXP
-  })
-);
+  });
 
 module.exports = {
   login: async (req, res) => {
@@ -54,7 +53,9 @@ module.exports = {
         await newUser.addBag(bagId);
 
         // delete the temporary user that was assigned to the bagId
-        const tempUser = await User.findOne({ activeBagId: bagId });
+        const tempUser = await User.findOne({
+          where: { activeBagId: bagId, username: { $eq: null } }
+        });
         tempUser.destroy();
       }
 
@@ -78,11 +79,13 @@ module.exports = {
       const { userId, username, password, phone } = req.body;
 
       const hashedPassword = await bcrypt.hash(password, config.SALT_ROUNDS);
-      const query = password ? {
-        username,
-        phone,
-        password: hashedPassword
-      } : { username, phone };
+      const query = password
+        ? {
+          username,
+          phone,
+          password: hashedPassword
+        }
+        : { username, phone };
 
       const updatedUser = await User.update(query, {
         where: { id: userId },
