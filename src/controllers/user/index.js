@@ -20,17 +20,37 @@ const createToken = userId =>
 module.exports = {
   login: async (req, res) => {
     try {
-      const { username, password } = req.body;
-      const user = await User.findOne({ where: { username }, raw: true });
+      const { username, password, bagId } = req.body;
+
+      const user = await User.findOne({ where: { username } });
 
       if (!user) res.status(400).end();
 
       const validPassword = await bcrypt.compare(password, user.password);
 
       if (validPassword) {
+        // if the user added items to the bag without being logged in
+        if (bagId) {
+          const prevBagId = user.activeBagId;
+          // set that bag as the user's current active bag
+          await user.update({ activeBagId: bagId });
+          await user.addBag(bagId);
+
+          // delete the temporary user that was assigned to the bagId
+          const tempUser = await User.findOne({
+            where: { activeBagId: bagId, username: { $eq: null } }
+          });
+          tempUser.destroy();
+
+          // delete the previous bag associated with the logging in user
+          // TODO: merge the contents of the bags
+          const prevBag = await Bag.findOne({ where: { id: prevBagId } });
+          prevBag.destroy();
+        }
+
         const token = createToken(user.id);
 
-        delete user.password;
+        delete user.dataValues.password;
 
         return res.json({ token, user });
       }
