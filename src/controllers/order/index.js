@@ -51,7 +51,14 @@ module.exports = {
       const { totalPrice } = await BagController.updateByActiveBagId(activeBagId);
       const resultOrder = Object.assign({}, createdOrder.toJSON(), { bagId: activeBagId });
 
-      return res.json({ createdOrder: resultOrder, totalPrice, token, userResult });
+      return res.json({
+        createdOrder:
+        resultOrder,
+        totalPrice,
+        token,
+        userResult,
+        activeBagId: activeBag.id
+      });
     } catch (err) {
       logger.error('Error adding order: ', err);
 

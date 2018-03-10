@@ -45,9 +45,18 @@ module.exports = {
 
   create: async (req, res) => {
     try {
-      const { username, password, phone } = req.body;
+      const { username, password, phone, bagId } = req.body;
       const hashedPassword = await bcrypt.hash(password, config.SALT_ROUNDS);
       const newUser = await User.create({ username, phone, password: hashedPassword });
+
+      if (bagId) {
+        await newUser.update({ activeBagId: bagId });
+        await newUser.addBag(bagId);
+
+        // delete the temporary user that was assigned to the bagId
+        const tempUser = await User.findOne({ activeBagId: bagId });
+        tempUser.destroy();
+      }
 
       const token = createToken(newUser.id);
 
