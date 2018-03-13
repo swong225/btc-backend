@@ -11,27 +11,46 @@ const config = require('../../config');
 const logger = require('../../utils/logger');
 const { JWT_PASSPHRASE } = require('../../config');
 
-const createToken = userId => (
+const createToken = userId =>
   jwt.sign({ sub: userId }, JWT_PASSPHRASE, {
     issuer: config.JWT_ISSUER,
     expiresIn: config.JWT_EXP
-  })
-);
+  });
 
 module.exports = {
   login: async (req, res) => {
     try {
-      const { username, password } = req.body;
-      const user = await User.findOne({ where: { username }, raw: true });
+      const { username, password, bagId } = req.body;
+
+      const user = await User.findOne({ where: { username } });
 
       if (!user) res.status(400).end();
 
       const validPassword = await bcrypt.compare(password, user.password);
 
       if (validPassword) {
+        // if the user added items to the bag without being logged in
+        if (bagId) {
+          const prevBagId = user.activeBagId;
+          // set that bag as the user's current active bag
+          await user.update({ activeBagId: bagId });
+          await user.addBag(bagId);
+
+          // delete the temporary user that was assigned to the bagId
+          const tempUser = await User.findOne({
+            where: { activeBagId: bagId, username: { $eq: null } }
+          });
+          if (tempUser) tempUser.destroy();
+
+          // delete the previous bag associated with the logging in user
+          // TODO: merge the contents of the bags
+          const prevBag = await Bag.findOne({ where: { id: prevBagId } });
+          if (prevBag) prevBag.destroy();
+        }
+
         const token = createToken(user.id);
 
-        delete user.password;
+        delete user.dataValues.password;
 
         return res.json({ token, user });
       }
@@ -45,9 +64,20 @@ module.exports = {
 
   create: async (req, res) => {
     try {
-      const { username, password, phone } = req.body;
+      const { username, password, phone, bagId } = req.body;
       const hashedPassword = await bcrypt.hash(password, config.SALT_ROUNDS);
       const newUser = await User.create({ username, phone, password: hashedPassword });
+
+      if (bagId) {
+        await newUser.update({ activeBagId: bagId });
+        await newUser.addBag(bagId);
+
+        // delete the temporary user that was assigned to the bagId
+        const tempUser = await User.findOne({
+          where: { activeBagId: bagId, username: { $eq: null } }
+        });
+        tempUser.destroy();
+      }
 
       const token = createToken(newUser.id);
 
@@ -69,11 +99,13 @@ module.exports = {
       const { userId, username, password, phone } = req.body;
 
       const hashedPassword = await bcrypt.hash(password, config.SALT_ROUNDS);
-      const query = password ? {
-        username,
-        phone,
-        password: hashedPassword
-      } : { username, phone };
+      const query = password
+        ? {
+          username,
+          phone,
+          password: hashedPassword
+        }
+        : { username, phone };
 
       const updatedUser = await User.update(query, {
         where: { id: userId },
@@ -145,5 +177,6 @@ module.exports = {
 
       return res.status(500).end();
     }
-  }
+  },
+  createToken
 };

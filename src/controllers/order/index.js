@@ -1,5 +1,6 @@
 const db = require('../../db');
 const BagController = require('../bag');
+const { createToken } = require('../user');
 
 const User = db.model('user');
 const Bag = db.model('bag');
@@ -10,14 +11,16 @@ const logger = require('../../utils/logger');
 module.exports = {
   add: async (req, res) => {
     try {
-      const { user, order } = req.body;
+      const { user: userId, order } = req.body;
       const { drink, isTea, teaType, flavor, size, price, chosenToppings } = order;
       let activeBagId;
+      let token;
 
       // determine the user to save the order to, if none exists, create a temp user
-      let userResult = await User.findOne({ where: { username: user } });
+      let userResult = await User.findOne({ where: { id: userId } });
       if (!userResult) {
-        userResult = await User.create({ username: 'temp' });
+        userResult = await User.create({ id: userId });
+        token = createToken(userResult.id);
       }
 
       // determine the active bag for the user
@@ -48,7 +51,14 @@ module.exports = {
       const { totalPrice } = await BagController.updateByActiveBagId(activeBagId);
       const resultOrder = Object.assign({}, createdOrder.toJSON(), { bagId: activeBagId });
 
-      return res.json({ createdOrder: resultOrder, totalPrice });
+      return res.json({
+        createdOrder:
+        resultOrder,
+        totalPrice,
+        token,
+        userResult,
+        activeBagId: activeBag.id
+      });
     } catch (err) {
       logger.error('Error adding order: ', err);
 
