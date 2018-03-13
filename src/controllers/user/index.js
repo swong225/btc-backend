@@ -40,12 +40,12 @@ module.exports = {
           const tempUser = await User.findOne({
             where: { activeBagId: bagId, username: { $eq: null } }
           });
-          tempUser.destroy();
+          if (tempUser) tempUser.destroy();
 
           // delete the previous bag associated with the logging in user
           // TODO: merge the contents of the bags
           const prevBag = await Bag.findOne({ where: { id: prevBagId } });
-          prevBag.destroy();
+          if (prevBag) prevBag.destroy();
         }
 
         const token = createToken(user.id);

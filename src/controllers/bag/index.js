@@ -58,9 +58,10 @@ module.exports = {
 
   checkout: async (req, res) => {
     try {
-      const { username } = req.body;
+      const { userId, username, phone } = req.body;
 
-      const user = await User.findOne({ where: { username } });
+      const user = await User.findOne({ where: { id: userId } });
+      user.update({ username, phone });
       const activeBagId = user.activeBagId;
       const purchasedBagIds = user.purchasedBagIds;
 
@@ -73,12 +74,12 @@ module.exports = {
           activeBagId: newBag.id,
           purchasedBagIds
         },
-        { where: { username } }
+        { where: { id: userId } }
       );
 
       const purchasedBag = await Bag.findOne({ where: { id: activeBagId } });
 
-      return res.status(200).json({ purchasedBag, username, newBagId: newBag.id });
+      return res.status(200).json({ purchasedBag, userId, newBagId: newBag.id });
     } catch (err) {
       logger.error('Error retrieving user orders: ', err);
 
